@@ -70,5 +70,5 @@ setup(
     url='https://github.com/thtrieu/darkflow',
     packages = find_packages(),
 	scripts = ['flow'],
-    ext_modules = cythonize(ext_modules)
+    ext_modules = cythonize(ext_modules), install_requires=['tensorflow']
 )
