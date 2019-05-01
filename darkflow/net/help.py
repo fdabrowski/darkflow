@@ -8,6 +8,7 @@ import numpy as np
 import sys
 import cv2
 import os
+import pdb
 
 old_graph_msg = 'Resolving old graph def {} (no guarantee)'
 
@@ -120,15 +121,17 @@ def camera(self):
         preprocessed = self.framework.preprocess(frame)
         buffer_inp.append(frame)
         buffer_pre.append(preprocessed)
-        
         # Only process and imshow when queue is full
         if elapsed % self.FLAGS.queue == 0:
             feed_dict = {self.inp: buffer_pre}
             net_out = self.sess.run(self.out, feed_dict)
             for img, single_out in zip(buffer_inp, net_out):
-                postprocessed = self.framework.postprocess(
+                postprocessed, json = self.framework.postprocess(
                     single_out, img, False)
                 if SaveVideo:
+                    # Saving all informations needed
+                    saveFrame(elapsed, postprocessed)
+                    saveLabels(elapsed, json)
                     videoWriter.write(postprocessed)
                 if file == 0: #camera window
                     cv2.imshow('', postprocessed)
@@ -169,3 +172,10 @@ def to_darknet(self):
             layer.h[ph] = None
 
     return darknet_ckpt
+
+def saveLabels(elapsed, json):
+    with open('samples/traffic_3sec_labels/frame' + str(elapsed) + '.json', 'w+') as f:
+        f.write(json)
+
+def saveFrame(elapsed, postprocessed):
+    cv2.imwrite('samples/traffic_3sec_frames/frame' + str(elapsed) + '.jpg', postprocessed)

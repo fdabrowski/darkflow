@@ -1,3 +1,4 @@
+import cv2
 import os
 import time
 import numpy as np
@@ -77,11 +78,12 @@ def return_predict(self, im):
     assert isinstance(im, np.ndarray), \
 				'Image is not a np.ndarray'
     h, w, _ = im.shape
+    # zmiana rozmiaru obrazu wejściowego
     im = self.framework.resize_input(im)
     this_inp = np.expand_dims(im, 0)
     feed_dict = {self.inp : this_inp}
-
-    out = self.sess.run(self.out, feed_dict)[0]
+    sess = self.sess.run(self.out, feed_dict)
+    out = sess[0]
     boxes = self.framework.findboxes(out)
     threshold = self.FLAGS.threshold
     boxesInfo = list()
@@ -99,7 +101,7 @@ def return_predict(self, im):
                 "x": tmpBox[1],
                 "y": tmpBox[3]}
         })
-    return boxesInfo
+    return boxesInfo, boxes
 
 import math
 

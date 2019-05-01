@@ -49,3 +49,17 @@ def setColorForClass(label):
         return TRUCK_COLOR
     elif (label == 'bicycle'):
         return BICYCLE_COLOR
+
+def drawFirstPrediction(boxes, img):
+    h, w, _ = img.shape
+    for b in boxes:
+        left = int((b.x - b.w / 2.) * w)
+        right = int((b.x + b.w / 2.) * w)
+        top = int((b.y - b.h / 2.) * h)
+        bot = int((b.y + b.h / 2.) * h)
+        cv2.rectangle(img,
+                      (left, top),
+                      (right, bot),
+                      (0, 255, 0),
+                      3)
+    cv2.imwrite('sample.jpg', img)
