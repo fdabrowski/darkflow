@@ -13,6 +13,9 @@ import tensorflow as tf
 from ..utils.loader import create_loader
 
 old_graph_msg = 'Resolving old graph def {} (no guarantee)'
+TRAFFIC = 'traffic'
+NIGHT_STREET = 'night_street'
+VIDEO_NAME = NIGHT_STREET
 
 def build_train_op(self):
     self.framework.loss(self.out)
@@ -178,15 +181,15 @@ def to_darknet(self):
     return darknet_ckpt
 
 def saveLabels(elapsed, json):
-    with open('samples/traffic_3sec_labels/frame' + str(elapsed-1) + '.json', 'w+') as f:
+    with open('samples/' +VIDEO_NAME +'/boxes/frame' + str(elapsed-1) + '.json', 'w+') as f:
         f.write(json)
 
 def saveFrame(elapsed, postprocessed):
-    cv2.imwrite('samples/traffic_3sec_frames/frame' + str(elapsed-1) + '.jpg', postprocessed)
+    cv2.imwrite('samples/' +VIDEO_NAME +'/frames/frame' + str(elapsed-1) + '.jpg', postprocessed)
 
 def saveTime(endTime):
     data = {}
     data['time'] = []
     data['time'].append({'time': endTime})
-    with open('samples/time/time' + '.json', 'w+') as f:
+    with open('samples/' +VIDEO_NAME +'/time/time' + '.json', 'w+') as f:
         json.dump(data['time'], f)
