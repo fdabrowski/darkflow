@@ -15,7 +15,9 @@ from ..utils.loader import create_loader
 old_graph_msg = 'Resolving old graph def {} (no guarantee)'
 TRAFFIC = 'traffic'
 NIGHT_STREET = 'night_street'
-VIDEO_NAME = NIGHT_STREET
+DARK_TRAFFIC = 'dark_traffic'
+VIDEO_NAME = DARK_TRAFFIC
+VIDEO_SAVE_DIR = '/Users/filipdabrowski/Documents/git/Comparer/yolo/' + VIDEO_NAME
 
 def build_train_op(self):
     self.framework.loss(self.out)
@@ -181,15 +183,24 @@ def to_darknet(self):
     return darknet_ckpt
 
 def saveLabels(elapsed, json):
-    with open('samples/' +VIDEO_NAME +'/boxes/frame' + str(elapsed-1) + '.json', 'w+') as f:
+    path = VIDEO_SAVE_DIR + '/boxes'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    with open(path + '/frame' + str(elapsed-1) + '.json', 'w+') as f:
         f.write(json)
 
 def saveFrame(elapsed, postprocessed):
-    cv2.imwrite('samples/' +VIDEO_NAME +'/frames/frame' + str(elapsed-1) + '.jpg', postprocessed)
+    path = VIDEO_SAVE_DIR +'/frames'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    cv2.imwrite(path +'/frame' + str(elapsed-1) + '.jpg', postprocessed)
 
 def saveTime(endTime):
     data = {}
+    path = VIDEO_SAVE_DIR +'/time'
+    if not os.path.exists(path):
+        os.makedirs(path)
     data['time'] = []
     data['time'].append({'time': endTime})
-    with open('samples/' +VIDEO_NAME +'/time/time' + '.json', 'w+') as f:
+    with open(path + '/time' + '.json', 'w+') as f:
         json.dump(data['time'], f)
