@@ -46,6 +46,8 @@ def postprocess(self, net_out, im, save = True):
 			continue
 		left, right, top, bot, mess, max_indx, confidence = boxResults
 		thick = int((h + w) // 300)
+		# just person class
+		# if mess == 'person':
 		resultsForJSON.append({"label": mess, "confidence": float('%.2f' % confidence), "topleft": {"x": left, "y": top}, "bottomright": {"x": right, "y": bot}})
 
 		cv2.rectangle(imgcv,

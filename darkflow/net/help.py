@@ -15,9 +15,11 @@ from ..utils.loader import create_loader
 old_graph_msg = 'Resolving old graph def {} (no guarantee)'
 TRAFFIC = 'traffic'
 NIGHT_STREET = 'night_street'
-DARK_TRAFFIC = 'dark_traffic'
-VIDEO_NAME = DARK_TRAFFIC
-VIDEO_SAVE_DIR = '/Users/filipdabrowski/Documents/git/Comparer/yolo/' + VIDEO_NAME
+DARK = 'dark_'
+LIGHT = 'light_'
+BLUR = 'blur_'
+VIDEO_NAME = NIGHT_STREET
+VIDEO_SAVE_DIR = '/Users/filipdabrowski/Documents/git/Comparer/yolo/' + BLUR + VIDEO_NAME
 
 def build_train_op(self):
     self.framework.loss(self.out)
