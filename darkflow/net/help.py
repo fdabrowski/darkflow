@@ -10,16 +10,7 @@ from time import time as timer
 import cv2
 import tensorflow as tf
 
-from ..utils.loader import create_loader
-
 old_graph_msg = 'Resolving old graph def {} (no guarantee)'
-TRAFFIC = 'traffic'
-NIGHT_STREET = 'night_street'
-DARK = 'dark_'
-LIGHT = 'light_'
-BLUR = 'blur_'
-VIDEO_NAME = NIGHT_STREET
-VIDEO_SAVE_DIR = '/Users/filipdabrowski/Documents/git/Comparer/yolo/' + BLUR + VIDEO_NAME
 
 def build_train_op(self):
     self.framework.loss(self.out)
@@ -78,29 +69,33 @@ def _get_fps(self, frame):
 def camera(self):
     file = self.FLAGS.demo
     SaveVideo = self.FLAGS.saveVideo
-    
+    video_name = self.FLAGS.projectName
+    video_save_dir = '/Users/filipdabrowski/Documents/git/Comparer/yolo/' + video_name
+
     if file == 'camera':
         file = 0
     else:
         assert os.path.isfile(file), \
         'file {} does not exist'.format(file)
-        
+
     camera = cv2.VideoCapture(file)
-    
+
     if file == 0:
         self.say('Press [ESC] to quit demo')
-        
+
     assert camera.isOpened(), \
     'Cannot capture source'
-    
+
     if file == 0:#camera window
         cv2.namedWindow('', 0)
         _, frame = camera.read()
         height, width, _ = frame.shape
         cv2.resizeWindow('', width, height)
     else:
-        _, frame = camera.read()
-        height, width, _ = frame.shape
+        # _, frame = camera.read()
+        # height, width, _ = frame.shape
+        width = int(camera.get(3))  # float
+        height = int(camera.get(4))  # float
 
     if SaveVideo:
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -116,7 +111,7 @@ def camera(self):
     # buffers for demo in batch
     buffer_inp = list()
     buffer_pre = list()
-    
+
     elapsed = int()
     start = timer()
     self.say('Press [ESC] to quit demo')
@@ -140,8 +135,8 @@ def camera(self):
                     single_out, img, False)
                 if SaveVideo:
                     # Saving all informations needed
-                    saveFrame(elapsed, postprocessed)
-                    saveLabels(elapsed, json)
+                    saveFrame(elapsed, postprocessed, video_save_dir)
+                    saveLabels(elapsed, json, video_save_dir)
                     videoWriter.write(postprocessed)
                 if file == 0: #camera window
                     cv2.imshow('', postprocessed)
@@ -158,7 +153,7 @@ def camera(self):
             choice = cv2.waitKey(1)
             if choice == 27: break
     endTime = time.time() - start
-    saveTime(endTime)
+    saveTime(endTime, video_save_dir)
     sys.stdout.write('\n')
     if SaveVideo:
         videoWriter.release()
@@ -184,22 +179,22 @@ def to_darknet(self):
 
     return darknet_ckpt
 
-def saveLabels(elapsed, json):
-    path = VIDEO_SAVE_DIR + '/boxes'
+def saveLabels(elapsed, json, video_save_dir):
+    path = video_save_dir + '/boxes'
     if not os.path.exists(path):
         os.makedirs(path)
     with open(path + '/frame' + str(elapsed-1) + '.json', 'w+') as f:
         f.write(json)
 
-def saveFrame(elapsed, postprocessed):
-    path = VIDEO_SAVE_DIR +'/frames'
+def saveFrame(elapsed, postprocessed, video_save_dir):
+    path = video_save_dir +'/frames'
     if not os.path.exists(path):
         os.makedirs(path)
     cv2.imwrite(path +'/frame' + str(elapsed-1) + '.jpg', postprocessed)
 
-def saveTime(endTime):
+def saveTime(endTime, video_save_dir):
     data = {}
-    path = VIDEO_SAVE_DIR +'/time'
+    path = video_save_dir +'/time'
     if not os.path.exists(path):
         os.makedirs(path)
     data['time'] = []
